@@ -3,28 +3,14 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Kas The'Brother Integrity</title>
+<title>Sistem Kas Organisasi</title>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <script src="settings.js"></script>
 
 <style>
-
-  .top-logo{
-position:fixed;
-top:20px;
-left:20px;
-z-index:999;
-}
-
-.top-logo img{
-height:45px;
-border-radius:12px;
-background:white;
-padding:5px;
-}
-  
 :root{
 --primary:#4e73df;
 --success:#1cc88a;
@@ -38,8 +24,6 @@ font-family:Segoe UI,sans-serif;
 background:linear-gradient(135deg,#4e73df,#1cc88a);
 min-height:100vh;
 }
-
-/* ================= INTRO ================= */
 
 #intro{
 position:fixed;
@@ -70,8 +54,6 @@ font-size:22px;
 margin-bottom:30px;
 }
 
-/* LOADING BAR */
-
 .loading-bar{
 width:200px;
 height:4px;
@@ -91,8 +73,7 @@ animation:loading 5s linear forwards;
 0%{width:0%}
 100%{width:100%}
 }
-
-/* ================= DASHBOARD ================= */
+/* ===================================================== */
 
 .container{
 max-width:1100px;
@@ -115,10 +96,7 @@ box-shadow:0 15px 35px rgba(0,0,0,0.15);
 margin-bottom:20px;
 }
 
-h2{
-color:white;
-margin-top:60px;
-}
+h2{color:white;margin-top:60px;}
 
 button{
 padding:10px 18px;
@@ -126,16 +104,19 @@ border:none;
 border-radius:12px;
 font-weight:bold;
 cursor:pointer;
+transition:0.3s;
 }
 
 .login-btn{
 background:#ffffff;
 color:#4e73df;
+box-shadow:0 5px 15px rgba(0,0,0,0.2);
 }
 
 .logout-btn{
 background:var(--danger);
 color:white;
+box-shadow:0 5px 15px rgba(0,0,0,0.2);
 }
 
 .input-btn{
@@ -146,6 +127,7 @@ color:white;
 font-size:15px;
 font-weight:600;
 border-radius:16px;
+box-shadow:0 10px 25px rgba(0,0,0,0.2);
 }
 
 .delete-btn{
@@ -155,6 +137,7 @@ background:linear-gradient(135deg,#e74a3b,#c0392b);
 color:white;
 font-weight:bold;
 border-radius:14px;
+box-shadow:0 8px 20px rgba(0,0,0,0.2);
 }
 
 input,select{
@@ -200,30 +183,58 @@ font-size:12px;
 .masuk{background:#1cc88a;}
 .keluar{background:#e74a3b;}
 
-.hidden{display:none;}
+.login-modal{
+position:fixed;
+top:0;
+left:0;
+right:0;
+bottom:0;
+background:rgba(0,0,0,0.6);
+display:flex;
+justify-content:center;
+align-items:center;
+animation:fadeModal 0.3s forwards;
+z-index: 1000;
+}
 
+@keyframes fadeModal{from{opacity:0;}to{opacity:1;}}
+
+.login-card{
+background:white;
+padding:30px;
+border-radius:20px;
+width:90%;
+max-width:350px;
+text-align:center;
+animation:scaleIn 0.3s ease;
+}
+
+@keyframes scaleIn{from{transform:scale(0.7);opacity:0;}to{transform:scale(1);opacity:1;}}
+
+.error-text{
+margin-top:10px;
+padding:10px;
+background:#ffe5e5;
+color:#e74a3b;
+border-radius:10px;
+font-size:13px;
+animation:shake 0.3s;
+}
+
+@keyframes shake{0%{transform:translateX(0);}25%{transform:translateX(-5px);}50%{transform:translateX(5px);}75%{transform:translateX(-5px);}100%{transform:translateX(0);}}
+
+.hidden{display:none;}
 </style>
 </head>
 
 <body>
 
-<!-- INTRO -->
 <div id="intro">
-
 <img src="https://cdn.danimaru.site/f/5dlEMjg" class="logo">
-
 <h1>The'Brother Integrity</h1>
-
 <div class="loading-bar">
 <div class="progress"></div>
 </div>
-
-</div>
-
-<!-- DASHBOARD -->
-
-<div class="top-logo">
-<img src="https://img2.pixhost.to/images/6241/702140488_zion.jpg">
 </div>
 
 <div class="top-button">
@@ -233,7 +244,7 @@ font-size:12px;
 
 <div class="container">
 
-<h2>Dashboard Kas The'Brother Integrity</h2>
+<h2>Dashboard Kas Organisasi</h2>
 
 <div class="summary-box">
 Total Keseluruhan Kas <br>
@@ -257,113 +268,210 @@ Rp <span id="totalKas">0</span>
 <tr>
 <th>Nama</th>
 <th>Saldo</th>
-<th>Aktivitas Saldo</th>
+<th>Aktivitas Terakhir</th>
 </tr>
 </thead>
 <tbody id="ringkasanTable"></tbody>
 </table>
 </div>
 
+<div id="adminSection" class="hidden">
+
+<div class="card">
+<h3>Input Kas</h3>
+<select id="pilihAnggota"></select>
+<select id="jenis">
+<option value="masuk">Kas Masuk</option>
+<option value="keluar">Kas Keluar</option>
+</select>
+<input type="number" id="nominal" placeholder="Nominal">
+<button class="input-btn" onclick="tambahKas()">Simpan Kas</button>
+</div>
+
+<div class="card">
+<h3>Tambah Anggota</h3>
+<input type="text" id="namaAnggota" placeholder="Nama Anggota">
+<button onclick="tambahAnggota()">Tambah</button>
+</div>
+
+<div class="card">
+<h3>Hapus Anggota</h3>
+<select id="hapusSelect"></select>
+<button class="delete-btn" onclick="hapusAnggota()">Hapus Anggota</button>
+</div>
+
+</div>
+
+</div>
+
+<div id="loginModal" class="login-modal hidden">
+<div class="login-card">
+<h3>Login Admin</h3>
+<input type="text" id="namaLogin" placeholder="Nama">
+<input type="password" id="passwordLogin" placeholder="Password">
+<button onclick="login()">Login</button>
+<button style="background:#888;color:white;margin-top:10px;" onclick="hideLogin()">Batal</button>
+<div id="loginError"></div>
+<p style="font-size:12px; color: #777; margin-top: 10px;">Cek settings.js untuk password default</p>
+</div>
 </div>
 
 <script>
+const _supabase = supabase.createClient(configs.supabaseUrl, configs.supabaseKey);
 
-const _supabase = supabase.createClient(configs.supabaseUrl, configs.supabaseKey)
-
-let lineChart
-let barChart
-
-/* INTRO */
+let lineChart, barChart;
 
 setTimeout(()=>{
-document.getElementById("intro").style.display="none"
+    document.getElementById("intro").style.display="none"
 },5000)
 
-/* LOAD DATA */
+function showLogin(){
+    document.getElementById("loginModal").classList.remove("hidden");
+}
+
+function hideLogin(){
+    document.getElementById("loginModal").classList.add("hidden");
+    document.getElementById("loginError").innerHTML="";
+}
+
+function login(){
+    let nama = document.getElementById("namaLogin").value;
+    let password = document.getElementById("passwordLogin").value;
+    let errorBox = document.getElementById("loginError");
+    errorBox.innerHTML = "";
+
+    if(nama === configs.adminUsername && password === configs.adminPassword){
+        document.getElementById("adminSection").classList.remove("hidden");
+        document.getElementById("loginBtn").classList.add("hidden");
+        document.getElementById("logoutBtn").classList.remove("hidden");
+        hideLogin();
+        loadData();
+    } else {
+        errorBox.innerHTML = '<div class="error-text">User atau Password salah!</div>';
+    }
+}
+
+function logout(){
+    document.getElementById("adminSection").classList.add("hidden");
+    document.getElementById("loginBtn").classList.remove("hidden");
+    document.getElementById("logoutBtn").classList.add("hidden");
+}
+
+async function tambahAnggota(){
+    let nama = document.getElementById("namaAnggota").value;
+    if(!nama) return;
+
+    const { error } = await _supabase.from('anggota').insert([{ nama: nama }]);
+    if(error) {
+        alert("Gagal tambah: " + error.message);
+        return;
+    }
+    document.getElementById("namaAnggota").value = "";
+    loadData();
+}
+
+async function hapusAnggota(){
+    let nama = document.getElementById("hapusSelect").value;
+    if(!nama) return;
+    if(!confirm("Yakin ingin menghapus anggota ini?")) return;
+
+    const { error } = await _supabase.from('anggota').delete().eq('nama', nama);
+    if(error) alert(error.message);
+    loadData();
+}
+
+async function tambahKas(){
+    let nama = document.getElementById("pilihAnggota").value;
+    let jenis = document.getElementById("jenis").value;
+    let nominal = parseInt(document.getElementById("nominal").value);
+    if(!nominal) return;
+
+    const { error } = await _supabase.from('kas').insert([{ 
+        nama_anggota: nama, 
+        jenis: jenis, 
+        nominal: nominal 
+    }]);
+
+    if(error) {
+        alert("Gagal simpan: " + error.message);
+        return;
+    }
+    document.getElementById("nominal").value = "";
+    loadData();
+}
 
 async function loadData(){
+    const { data: users, error: errU } = await _supabase.from('anggota').select('*').order('nama');
+    const { data: allKas, error: errK } = await _supabase.from('kas').select('*').order('created_at', { ascending: true });
 
-const { data: users } = await _supabase.from('anggota').select('*').order('nama')
-const { data: allKas } = await _supabase.from('kas').select('*').order('created_at',{ascending:true})
+    if(errU || errK) return console.error("Database Error");
 
-let total=0
-let labels=[]
-let dataChart=[]
-let table=document.getElementById("ringkasanTable")
+    let select = document.getElementById("pilihAnggota");
+    let hapusSelect = document.getElementById("hapusSelect");
+    select.innerHTML = "";
+    hapusSelect.innerHTML = "";
 
-table.innerHTML=""
+    let total = 0;
+    let labels = [];
+    let dataChart = [];
+    let table = document.getElementById("ringkasanTable");
+    table.innerHTML = "";
 
-users.forEach(u=>{
+    users.forEach(u => {
+        let userKas = allKas.filter(k => k.nama_anggota === u.nama);
+        let saldo = 0;
+        userKas.forEach(k => { saldo += k.jenis === "masuk" ? k.nominal : -k.nominal; });
+        total += saldo;
 
-let userKas=allKas.filter(k=>k.nama_anggota===u.nama)
-let saldo=0
+        labels.push(u.nama);
+        dataChart.push(saldo);
 
-userKas.forEach(k=>{
-saldo+=k.jenis==="masuk"?k.nominal:-k.nominal
-})
+        select.innerHTML += `<option value="${u.nama}">${u.nama}</option>`;
+        hapusSelect.innerHTML += `<option value="${u.nama}">${u.nama}</option>`;
 
-total+=saldo
+        let last = userKas.length > 0 ? userKas[userKas.length-1].jenis : "-";
+        let badge = last === "masuk" ? `<span class="badge masuk">Masuk</span>` : 
+                    last === "keluar" ? `<span class="badge keluar">Keluar</span>` : "-";
 
-labels.push(u.nama)
-dataChart.push(saldo)
+        table.innerHTML += `
+        <tr>
+            <td>${u.nama}</td>
+            <td>Rp ${saldo.toLocaleString()}</td>
+            <td>${badge}</td>
+        </tr>`;
+    });
 
-let last=userKas.length>0?userKas[userKas.length-1].jenis:"-"
-
-let badge=
-last==="masuk"?`<span class="badge masuk">Masuk</span>`:
-last==="keluar"?`<span class="badge keluar">Keluar</span>`:"-"
-
-table.innerHTML+=`
-<tr>
-<td>${u.nama}</td>
-<td>Rp ${saldo.toLocaleString()}</td>
-<td>${badge}</td>
-</tr>`
-
-})
-
-document.getElementById("totalKas").innerText=total.toLocaleString()
-
-renderCharts(labels,dataChart)
-
+    document.getElementById("totalKas").innerText = total.toLocaleString();
+    renderCharts(labels, dataChart);
 }
 
-function renderCharts(labels,data){
+function renderCharts(labels, data){
+    if(lineChart) lineChart.destroy();
+    if(barChart) barChart.destroy();
 
-if(lineChart) lineChart.destroy()
-if(barChart) barChart.destroy()
+    lineChart = new Chart(document.getElementById("lineChart"), {
+        type: "line",
+        data: { labels: labels, datasets: [{
+            data: data,
+            borderColor: "#4e73df",
+            backgroundColor: "rgba(78,115,223,0.2)",
+            tension: 0.4,
+            fill: true
+        }]},
+        options: { plugins: { legend: { display: false } } }
+    });
 
-lineChart=new Chart(document.getElementById("lineChart"),{
-type:"line",
-data:{
-labels:labels,
-datasets:[{
-data:data,
-borderColor:"#4e73df",
-backgroundColor:"rgba(78,115,223,0.2)",
-tension:0.4,
-fill:true
-}]
-},
-options:{plugins:{legend:{display:false}}}
-})
-
-barChart=new Chart(document.getElementById("barChart"),{
-type:"bar",
-data:{
-labels:labels,
-datasets:[{
-data:data,
-backgroundColor:"#1cc88a"
-}]
-},
-options:{plugins:{legend:{display:false}}}
-})
-
+    barChart = new Chart(document.getElementById("barChart"), {
+        type: "bar",
+        data: { labels: labels, datasets: [{
+            data: data,
+            backgroundColor: "#1cc88a"
+        }]},
+        options: { plugins: { legend: { display: false } } }
+    });
 }
 
-loadData()
-
+loadData();
 </script>
 
 </body>
