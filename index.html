@@ -268,60 +268,41 @@ Rp <span id="totalKas">0</span>
 
 <script>
 
-  /* ================= LOGIN ADMIN ================= */
+const _supabase = supabase.createClient(configs.supabaseUrl, configs.supabaseKey);
+
+let lineChart, barChart;
 
 function showLogin(){
-
-let username = prompt("Masukkan Username Admin")
-if(!username) return
-
-let password = prompt("Masukkan Password")
-
-if(username === configs.adminUsername && password === configs.adminPassword){
-
-localStorage.setItem("adminLogin","true")
-
-document.getElementById("loginBtn").classList.add("hidden")
-document.getElementById("logoutBtn").classList.remove("hidden")
-
-alert("Login Berhasil")
-
-}else{
-
-alert("Username atau Password Salah")
-
+    document.getElementById("loginModal").classList.remove("hidden");
 }
 
+function hideLogin(){
+    document.getElementById("loginModal").classList.add("hidden");
+    document.getElementById("loginError").innerHTML="";
+}
+
+function login(){
+    let nama = document.getElementById("namaLogin").value;
+    let password = document.getElementById("passwordLogin").value;
+    let errorBox = document.getElementById("loginError");
+    errorBox.innerHTML = "";
+
+    if(nama === configs.adminUsername && password === configs.adminPassword){
+        document.getElementById("adminSection").classList.remove("hidden");
+        document.getElementById("loginBtn").classList.add("hidden");
+        document.getElementById("logoutBtn").classList.remove("hidden");
+        hideLogin();
+        loadData();
+    } else {
+        errorBox.innerHTML = '<div class="error-text">User atau Password salah!</div>';
+    }
 }
 
 function logout(){
-
-localStorage.removeItem("adminLogin")
-
-document.getElementById("loginBtn").classList.remove("hidden")
-document.getElementById("logoutBtn").classList.add("hidden")
-
-alert("Logout Berhasil")
-
+    document.getElementById("adminSection").classList.add("hidden");
+    document.getElementById("loginBtn").classList.remove("hidden");
+    document.getElementById("logoutBtn").classList.add("hidden");
 }
-
-function checkLogin(){
-
-if(localStorage.getItem("adminLogin") === "true"){
-
-document.getElementById("loginBtn").classList.add("hidden")
-document.getElementById("logoutBtn").classList.remove("hidden")
-
-}
-
-}
-
-checkLogin()
-  
-const _supabase = supabase.createClient(configs.supabaseUrl, configs.supabaseKey)
-
-let lineChart
-let barChart
 
 /* INTRO */
 
