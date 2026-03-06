@@ -268,6 +268,56 @@ Rp <span id="totalKas">0</span>
 
 <script>
 
+  /* ================= LOGIN ADMIN ================= */
+
+function showLogin(){
+
+let username = prompt("Masukkan Username Admin")
+if(!username) return
+
+let password = prompt("Masukkan Password")
+
+if(username === configs.adminUsername && password === configs.adminPassword){
+
+localStorage.setItem("adminLogin","true")
+
+document.getElementById("loginBtn").classList.add("hidden")
+document.getElementById("logoutBtn").classList.remove("hidden")
+
+alert("Login Berhasil")
+
+}else{
+
+alert("Username atau Password Salah")
+
+}
+
+}
+
+function logout(){
+
+localStorage.removeItem("adminLogin")
+
+document.getElementById("loginBtn").classList.remove("hidden")
+document.getElementById("logoutBtn").classList.add("hidden")
+
+alert("Logout Berhasil")
+
+}
+
+function checkLogin(){
+
+if(localStorage.getItem("adminLogin") === "true"){
+
+document.getElementById("loginBtn").classList.add("hidden")
+document.getElementById("logoutBtn").classList.remove("hidden")
+
+}
+
+}
+
+checkLogin()
+  
 const _supabase = supabase.createClient(configs.supabaseUrl, configs.supabaseKey)
 
 let lineChart
