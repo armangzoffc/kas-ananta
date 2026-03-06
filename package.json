@@ -1,0 +1,12 @@
+{
+  "name": "sistem-kas-organisasi",
+  "version": "1.0.0",
+  "description": "Sistem Kas dengan Supabase",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2"
+  }
+}
