@@ -11,6 +11,20 @@
 
 <style>
 
+  .top-logo{
+position:fixed;
+top:20px;
+left:20px;
+z-index:999;
+}
+
+.top-logo img{
+height:45px;
+border-radius:12px;
+background:white;
+padding:5px;
+}
+  
 :root{
 --primary:#4e73df;
 --success:#1cc88a;
@@ -207,6 +221,10 @@ font-size:12px;
 </div>
 
 <!-- DASHBOARD -->
+
+<div class="top-logo">
+<img src="https://files.catbox.moe/yh8xjn.png">
+</div>
 
 <div class="top-button">
 <button id="loginBtn" class="login-btn" onclick="showLogin()">Login Admin</button>
